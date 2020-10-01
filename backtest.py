@@ -180,7 +180,7 @@ class Strategy:
         acc.trade_option(today, Option('call', self._stock_ticker, pxC, ltd), -1 * qty)
         acc.trade_option(today, Option('call', self._stock_ticker, pxD, ltd), +1 * qty)
 
-    def run(self, **kwargs):
+    def run(self, *, printfreq=1, **kwargs):
         self._set_args(kwargs)
         timeline = self._stock_prices[self._stock_ticker].loc[self._start:].index
         for i,today in enumerate(timeline):
@@ -205,11 +205,11 @@ class Strategy:
                 acc.trade_stock(today, Stock(self._stock_ticker), rebal_qty)
 
             # at every day end
-            print(f'{i:5d} | {today.date()} ', end='')
+            if i%printfreq==0: print(f'{i:5d} | {today.date()} ', end='')
             for _,acc in self._acc.items():
                 nav = acc.settlement(today)[-1]
-                print(f' | {acc._name}: {nav:12,.2f}', end='')
-            print(end='\t\t\r')
+                if i%printfreq==0: print(f' | {acc._name}: {nav:12,.2f}', end='')
+            if i%printfreq==0: print(end='\t\t\r')
         return self
 
     def evaluate(self, **kwargs):
